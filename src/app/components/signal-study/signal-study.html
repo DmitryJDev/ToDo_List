@@ -1,0 +1,16 @@
+<div class="todo-container "><h2>Todo List ({{ todoCounter() }} tasks)</h2>       <input [(ngModel)]="newTodoTitle"
+                                                                                         placeholder="Add a new task"/>
+  <button (click)="addTodo()">Add</button>
+  <br>
+  <button (click)="showCompleted.set(!showCompleted()) ">{{showCompleted()?'Показать все':'Показать заверщенные'}}</button>
+  <ul class="todo-list">
+    @for (todo of filteredTodos(); track todo.id) {
+      <li [style.background-color]="todo.completed ? 'lightgreen' : 'lightcoral'"> {{ todo.title }}
+        <input type="checkbox" [checked]="todo.completed" (click)="changeStance(todo.id)">
+        <button (click)="deleteTodo(todo.id)">Delete</button>
+      </li>
+    }
+
+
+  </ul>
+</div>
