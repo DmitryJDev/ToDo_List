@@ -1,9 +1,11 @@
-import {Component , OnInit} from '@angular/core';
+import {Component, OnInit, Signal} from '@angular/core';
 import {signal, computed, effect} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Todo} from '../../services/todos'
-import {toSignal} from '@angular/core/rxjs-interop';
+
 import {FormsModule} from '@angular/forms';
+import {TodoServiceUsingSignals} from '../../services/todo-service-using-signals';
+import {Sign} from 'node:crypto';
 
 @Component({
   selector: 'app-signal-study',
@@ -13,18 +15,23 @@ import {FormsModule} from '@angular/forms';
   standalone: true,
 })
 export class SignalStudy implements OnInit {
+  error!:Signal<string|null>
   newTodoTitle = ''
-  showCompleted = signal(true);
   filteredTodos = computed(() => this.showCompleted() ?this.todoSignal().filter(todo => todo.completed): this.todoSignal()  )
+  private apiString = 'https://jsonplaceholder.typicode.com/todos';
 
   todoSignal = signal<Todo[]>([]);
-  private apiString = 'https://jsonplaceholder.typicode.com/todos';
   todoCounter = computed(() => this.todoSignal().length)
+  showCompleted = signal(false);
+  todoFiltered:Signal<Todo[]>=signal<Todo[]>([])
+  constructor(private todoService:TodoServiceUsingSignals, private http :HttpClient) {
+  this.todoService.loadTodos()
+  this.http.get<Todo[]>(this.apiString).subscribe(data=>{
 
-  constructor(private http: HttpClient) {
+    this.todoSignal.set(data.filter(todos=>todos.id<=5))
+  })
+    this.error = this.todoService.getError();
 
-    const todos=toSignal(this.http.get<Todo[]>(this.apiString),{initialValue:[]})
-    this.todoSignal.set(todos().filter(todos => todos.id <= 5))
 
     effect(() => {
       const todos = this.todoSignal();
@@ -39,13 +46,20 @@ export class SignalStudy implements OnInit {
     });
   }
 
+  filtered:string='';
+  sortBy: 'title' | 'completed'='title';
   ngOnInit() {
-    // this.http.get<Todo[]>(this.apiString).subscribe(data => {
-    //   this.todoSignal.set(data.filter(todos => todos.id <= 5))
-    // })
+
+
+    this.todoFiltered = this.todoService.computedFilteredTodos()
 
   }
-
+  setSortBy( ) {
+   this.todoService.setSortBy(this.sortBy)
+  }
+  updateSearch(){
+    this.todoService.setSearchQuery(this.filtered)
+  }
 
   addTodo() {
 

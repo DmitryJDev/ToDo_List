@@ -14,3 +14,28 @@
 
   </ul>
 </div>
+
+<div>
+  @if (error()) {
+    {{error()}}
+  }
+</div>
+<hr>
+<div>
+
+  <input type="text" [(ngModel)]="filtered" (input)="updateSearch()" placeholder="Enter query">
+  <br>
+
+  <select [(ngModel)]="sortBy" (change)="setSortBy()">
+    <option value="title">Title</option>
+
+    <option value="completed">Completed</option>
+  </select>
+  <br>
+  <ul>
+    @for (todo of todoFiltered(); track todo.id){
+      <li>  {{ todo.title }} - {{ todo.completed ? 'Done' : 'Pending' }}</li>
+    }
+  </ul>
+
+</div>

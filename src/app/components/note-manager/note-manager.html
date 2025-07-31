@@ -1,0 +1,47 @@
+<br>
+<br>
+<br>
+<br>
+<input type="button" (click)="clearLocal()" value="Clear Local Storage">
+<br>
+<br>
+<br>
+<br>
+<input type="text" [(ngModel)]="newNote" value="Nore">
+@if (startUpdating){
+  <button (click)="updateNote()">Update Note</button>
+} @else {
+  <button (click)="addingNewNote()">Add Note</button>
+}
+<br>
+<select #mySelect (change)="setSortBy(mySelect)" [value]="'title'">
+  <option value="title">Sort by Title</option>
+  <option value="createdAt">Sort by Date</option>
+</select>
+<br>
+<br>
+<select (change)="selectNote()" [(ngModel)]="selectedNote">
+  <option value="work">work</option>
+  <option value="hobby">hobby</option>
+  <option value="personal">personal</option>
+  <option value="other">other</option>
+  <option value='all'>ВСЕ ПОКАЗАТЬ</option>
+
+</select>
+<br>
+<br>
+
+<ul class="note-manager">
+
+  @for (note of notes(); track note.id) {
+    <li (dblclick)="startUpdateNote(note.id, note.content)"><strong> <span style="color:blue">Title</span> - {{ note.title }}</strong><br> <span
+        style="color:blue">Content</span>
+      -  {{ note.content }} <br>
+      <span style="color:blue">Date</span> - {{ note.createdAt|date:'dd/MM/yyyy HH:mm:ss' }}
+      <br><span style="color:blue"> Category </span>- {{ note.tags }}
+      <br>
+      <button (click)="deleteNote(note.id )">Delete</button>
+      <hr>
+    </li>
+  }
+</ul>
